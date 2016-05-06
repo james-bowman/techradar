@@ -88,15 +88,16 @@ for (var i = 0; i < radar_data.length; i++) {
 
     }
 
-    var itemsByStage = _.groupBy(radar_data[i].items, function(item) {return Math.floor(item.pc.r / 100)});
     var offsetIndex = 0;
-    for (var stageIdx in _(itemsByStage).keys()) {
-
-        if (stageIdx > 0) {
-            offsetIndex = offsetIndex + itemsByStage[stageIdx-1].length + 1; 
-            console.log("offsetIndex = " + itemsByStage[stageIdx-1].length, offsetIndex );
+    for (var stageIdx = 0; stageIdx < radar_data[i].items.length; stageIdx++) {
+         if (stageIdx > 0) {
+            offsetIndex = offsetIndex + radar_data[i].items[stageIdx-1].length + 1; 
+            console.log("offsetIndex = " + radar_data[i].items[stageIdx-1].length, offsetIndex );
         }
+    
 
+    if (radar_data[i].items[stageIdx].length > 0) {
+        // add sector title to legend if there are blips for that sector
         radar.add(pv.Label)         
             .left( radar_data[i].left + headingFontSize )
             .top( radar_data[i].top + quadrantFontSize + spacer + (stageIdx * headingFontSize) + (offsetIndex * fontSize) )
@@ -104,7 +105,22 @@ for (var i = 0; i < radar_data.length; i++) {
             .strokeStyle( '#cccccc' )
             .fillStyle( '#cccccc')                    
             .font(headingFontSize + "px Courier New");
-
+            
+        // assign uniformly random polar coordinates for blips within quadrant/sector's annulus
+        var innerCircle = (stageIdx == 0 ? 0 : radar_arcs[stageIdx-1].r) + 10
+        var outerCircle = radar_arcs[stageIdx].r - 10
+        console.log("Annulus is " + innerCircle + " < r > " + outerCircle);
+        
+        for (var j = 0; j < radar_data[i].items[stageIdx].length; j++) {
+            var t = Math.floor(Math.random() * 80 + radar_data[i].theta + 10);
+            var rnd = Math.random() * (Math.pow(outerCircle,2) - Math.pow(innerCircle,2)) + Math.pow(innerCircle,2);
+            var r = Math.floor(Math.sqrt(rnd));
+             
+            radar_data[i].items[stageIdx][j].pc = {t: t, r: r};
+            console.log("Coordinates for annulus " + stageIdx + " : r=" + radar_data[i].items[stageIdx][j].pc.r + ", t=" + radar_data[i].items[stageIdx][j].pc.t)
+        }
+    }
+    
     radar.add(pv.Label)             
         .left( radar_data[i].left )         
         .top( radar_data[i].top + quadrantFontSize + spacer + (stageIdx * headingFontSize) + (offsetIndex * fontSize) )
@@ -112,7 +128,7 @@ for (var i = 0; i < radar_data.length; i++) {
         .fillStyle( radar_data[i].color )                    
         .add( pv.Dot )            
             .def("i", radar_data[i].top + quadrantFontSize + spacer + (stageIdx * headingFontSize) + spacer  + (offsetIndex * fontSize) )
-            .data(itemsByStage[stageIdx])            
+            .data(radar_data[i].items[stageIdx])            
             .top( function() { return ( this.i() + (this.index * fontSize) );} )   
             .shape( function(d) {return (d.movement === 't' ? "triangle" : "circle");})                 
             .cursor( function(d) { return ( d.url !== undefined ? "pointer" : "auto" ); })                                                            
@@ -125,7 +141,7 @@ for (var i = 0; i < radar_data.length; i++) {
 
     radar.add(pv.Dot)       
       .def("active", false)
-      .data(itemsByStage[stageIdx])
+      .data(radar_data[i].items[stageIdx])
       .size( function(d) { return ( d.blipSize !== undefined ? d.blipSize : 70 ); })
       .left(function(d) { var x = polar_to_raster(d.pc.r, d.pc.t)[0];
                           //console.log("name:" + d.name + ", x:" + x); 
@@ -146,11 +162,9 @@ for (var i = 0; i < radar_data.length; i++) {
           .textBaseline("middle")
           .textStyle("white");            
 
-
     }
 }      
-       
+ 
  radar.anchor('radar');
- radar.render();
-     
-  };
+ radar.render(); 
+};
