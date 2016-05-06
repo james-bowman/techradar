@@ -33,10 +33,10 @@ var radar_arcs = [
 // - Programming Languages and Frameworks
 //
 // Rings:
-// - Adopt: blips you should be using now; proven and mature for use
-// - Trial: blips ready for use, but not as completely proven as those in the adopt ring; use on a trial basis, to decide whether they should be part of your toolkit
-// - Assess: things that you should look at closely, but not necessarily trial yet - unless you think they would be a particularly good fit for you
-// - Hold: things that are getting attention in the industry, but not ready for use; sometimes they are not mature enough yet, sometimes they are irredeemably flawed
+// - 0. Adopt: blips you should be using now; proven and mature for use
+// - 1. Trial: blips ready for use, but not as completely proven as those in the adopt ring; use on a trial basis, to decide whether they should be part of your toolkit
+// - 2. Assess: things that you should look at closely, but not necessarily trial yet - unless you think they would be a particularly good fit for you
+// - 3. Hold: things that are getting attention in the industry, but not ready for use; sometimes they are not mature enough yet, sometimes they are irredeemably flawed
 //      Note: there's no "avoid" ring, but throw things in the hold ring that people shouldn't use.
 
 var h = 1000;
